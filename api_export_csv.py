@@ -86,33 +86,33 @@ def exportar_csv():
                 triggers_map[hid] = []
             triggers_map[hid].append(desc)
             
-    # 3. Processar Dados Simplificados
+    # 3. Processar Dados Simplificados (em Inglês)
     csv_rows = []
-    colunas = ["Nome do Ativo", "Nome Tecnico", "IP", "Tipo de Comunicacao", "Status"]
+    colunas = ["Active Name", "Technical Name", "IP Address", "Communication Type", "Status"]
     
     for host in hosts:
         hostid = host.get('hostid', '')
         hostname = host.get('host', '')
         name = host.get('name', '')
-        status_monitoramento = host.get('status', '0') # 0 = Monitorado, 1 = Desabilitado
+        status_monitoramento = host.get('status', '0') # 0 = Monitored, 1 = Disabled
         
         # IPs das interfaces
         ips = [iface.get('ip', '') for iface in host.get('interfaces', []) if iface.get('ip')]
         ip_str = ", ".join(list(set(ips))) if ips else "N/A"
         
-        # Tipo de comunicação
+        # Tipo de comunicação (em Inglês)
         types = []
         for iface in host.get('interfaces', []):
             iftype = iface.get('type')
-            if iftype == '1': types.append("Agente Zabbix")
+            if iftype == '1': types.append("Zabbix Agent")
             elif iftype == '2': types.append("SNMP")
             elif iftype == '3': types.append("IPMI")
             elif iftype == '4': types.append("JMX")
-        type_str = ", ".join(list(set(types))) if types else "API / Sem Agente"
+        type_str = ", ".join(list(set(types))) if types else "API / Agentless"
         
         # Determinação de UP ou DOWN (Online/Offline no momento do report)
         if status_monitoramento == '1':
-            status_atual = "Desabilitado"
+            status_atual = "Disabled"
         else:
             agent_avail = int(host.get('available', 0))
             snmp_avail = int(host.get('snmp_available', 0))
