@@ -60,7 +60,8 @@ def exportar_csv():
         "output": ["hostid", "host", "name", "status", "available", "snmp_available"],
         "selectInterfaces": ["ip", "type", "port"],
         "selectHostGroups": ["name"],
-        "selectParentTemplates": ["name"]
+        "selectParentTemplates": ["name"],
+        "selectInventory": ["os"]
     })
     
     if not hosts:
@@ -88,7 +89,7 @@ def exportar_csv():
             
     # 3. Processar Dados Simplificados (em Inglês)
     csv_rows = []
-    colunas = ["Active Name", "Technical Name", "IP Address", "Communication Type", "Status"]
+    colunas = ["Active Name", "Technical Name", "IP Address", "Communication Type", "Operating System", "Status"]
     
     for host in hosts:
         hostid = host.get('hostid', '')
@@ -96,6 +97,14 @@ def exportar_csv():
         name = host.get('name', '')
         status_monitoramento = host.get('status', '0') # 0 = Monitored, 1 = Disabled
         
+        # Sistema Operacional do inventario
+        inventory = host.get('inventory')
+        os_name = inventory.get('os', 'N/A') if isinstance(inventory, dict) and inventory else "N/A"
+        if os_name:
+            os_name = os_name.replace("\n", " ").replace("\r", " ").strip()
+        else:
+            os_name = "N/A"
+
         # IPs das interfaces
         ips = [iface.get('ip', '') for iface in host.get('interfaces', []) if iface.get('ip')]
         ip_str = ", ".join(list(set(ips))) if ips else "N/A"
@@ -135,7 +144,7 @@ def exportar_csv():
                 )
                 status_atual = "DOWN" if is_down else "UP"
         
-        row_data = [name, hostname, ip_str, type_str, status_atual]
+        row_data = [name, hostname, ip_str, type_str, os_name, status_atual]
         csv_rows.append(row_data)
 
     # 4. Gerar o CSV em memoria com separador ';' e codificacao utf-8-sig
