@@ -32,18 +32,15 @@ graph TD
 
 ## 📂 Estrutura do Repositório
 
-Aqui estão os arquivos disponíveis neste repositório. Clique em cada link para acessar o código:
+Aqui estão os arquivos de exportação disponíveis neste repositório:
 
 ### 📥 1. Integração de Botão no Grafana (FastAPI ➔ CSV)
-*   [api_export_csv.py](api_export_csv.py): **[Botão]** API de exportação CSV para o Grafana (Zabbix antigo `10.254.248.86`).
-*   [api_export_csv_10_10_1_26.py](api_export_csv_10_10_1_26.py): **[Botão]** API de exportação CSV para o Grafana (Novo Zabbix `10.10.1.26`).
+*   [api_export_csv.py](api_export_csv.py): **[Botão]** API de exportação CSV para o Grafana (Cliente Safra - IP mantido oculto por segurança).
+*   [api_export_csv_vega.py](api_export_csv_vega.py): **[Botão]** API de exportação CSV para o Grafana (Cliente Vega - IP `10.10.1.26`).
 
 ### 📊 2. Relatórios de Inventário CLI (Excel)
-*   [export_hosts.py](export_hosts.py): **[EXPORT completo]** Script CLI para exportar inventário detalhado em planilha Excel (Zabbix antigo `10.254.248.86`).
-*   [export_hosts_10_10_1_26.py](export_hosts_10_10_1_26.py): **[EXPORT completo]** Script CLI para exportar inventário detalhado em planilha Excel (Novo Zabbix `10.10.1.26`).
-
-### 📂 3. Backup de Configurações CLI (YAML)
-*   [backup_zabbix_config_10_10_1_26.py](backup_zabbix_config_10_10_1_26.py): Script CLI para fazer backup de todos os templates em formato YAML (Zabbix `10.10.1.26`).
+*   [export_hosts.py](export_hosts.py): **[EXPORT completo]** Script CLI para exportar inventário em planilha Excel (Cliente Safra - IP mantido oculto por segurança).
+*   [export_hosts_vega.py](export_hosts_vega.py): **[EXPORT completo]** Script CLI para exportar inventário em planilha Excel (Cliente Vega - IP `10.10.1.26`).
 
 ---
 

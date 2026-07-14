@@ -19,7 +19,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 import uvicorn
 
-app = FastAPI(title="Zabbix API CSV Export Service - 10.10.1.26")
+app = FastAPI(title="Zabbix API CSV Export Service - Vega")
 
 # CONFIGURAÇÕES DA API DO ZABBIX - COLOQUE O SEU TOKEN DO NOVO AMBIENTE
 TOKEN = "SEU_TOKEN_AQUI"
@@ -148,7 +148,7 @@ def exportar_csv():
     csv_data = output.getvalue().encode('utf-8-sig')
     output.close()
 
-    headers = {'Content-Disposition': 'attachment; filename="relatorio_zabbix_10_10_1_26_basico.csv"'}
+    headers = {'Content-Disposition': 'attachment; filename="relatorio_zabbix_vega_basico.csv"'}
     return StreamingResponse(io.BytesIO(csv_data), media_type="text/csv", headers=headers)
 
 if __name__ == "__main__":

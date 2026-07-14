@@ -385,7 +385,7 @@ for col in ws_dash.columns:
     col_letter = get_column_letter(col[0].column)
     ws_dash.column_dimensions[col_letter].width = max(max_len + 5, 15)
 
-xlsx_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ativos_zabbix_10_10_1_26.xlsx")
+xlsx_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ativos_zabbix_vega.xlsx")
 try:
     wb.save(xlsx_file)
     print(f"\n[SUCESSO] Planilha Excel (.xlsx) gerada: {xlsx_file}")
