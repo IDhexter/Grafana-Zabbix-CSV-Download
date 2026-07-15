@@ -2,25 +2,7 @@ import urllib.request
 import json
 import sys
 import os
-
-# Auto-instala a biblioteca openpyxl para gerar planilhas reais com abas e cores
-try:
-    import openpyxl
-    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-    from openpyxl.utils import get_column_letter
-except ImportError:
-    print("Biblioteca 'openpyxl' nao encontrada. Instalando automaticamente...")
-    import subprocess
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
-        import openpyxl
-        from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-        from openpyxl.utils import get_column_letter
-        print("Biblioteca 'openpyxl' instalada com sucesso!\n")
-    except Exception as e:
-        print(f"Erro ao instalar 'openpyxl': {e}")
-        print("Por favor, execute manualmente no terminal: pip install openpyxl")
-        sys.exit(1)
+import csv
 
 # CONFIGURAÇÕES DO SEU ZABBIX - COLOQUE O SEU TOKEN
 TOKEN = "SEU_TOKEN_AQUI"
@@ -172,9 +154,13 @@ for item in items:
         host_items_map[hid] = []
     host_items_map[hid].append(item)
 
-aba_hypervisors = []
-aba_vms = []
-aba_rede = []
+colunas = [
+    "ID do Host", "Nome Tecnico", "Nome Visivel", "Endereco IP", 
+    "Modelo de Monitoramento", "Status (Ativo/Inativo)", "Proxy de Monitoramento",
+    "CPU Ult. Valor", "Memoria Ult. Valor", "Discos (Uso %)", "Uptime", "Alertas Ativos no Ativo",
+    "Grupos", "Templates Vinculados", "Sistema Operacional (OS)", "Hardware", "Numero de Serie", "Descricao"
+]
+
 aba_geral = []
 
 for host in hosts:
@@ -274,121 +260,14 @@ for host in hosts:
     ]
     
     aba_geral.append(row_data)
-    
-    # Classificação
-    if "Virtualization" in groups_str or "Hypervisors" in groups_str or "VMware Hypervisor" in templates_str or "ESXi" in templates_str or "idrac" in hostname.lower() or "idrac" in name.lower() or "dell" in templates_str.lower():
-        aba_hypervisors.append(row_data)
-    elif any(x in groups_str for x in ["Network", "Switches", "Routers", "Firewalls"]) or any(y in templates_str for y in ["SNMP", "FortiGate", "Cisco", "Switch"]):
-        aba_rede.append(row_data)
-    else:
-        aba_vms.append(row_data)
 
-wb = openpyxl.Workbook()
-ws_dash = wb.active
-ws_dash.title = "Resumo Geral"
-ws_dash.views.sheetView[0].showGridLines = True
-
-cor_header_fill = PatternFill(start_color="1E4A38", end_color="1E4A38", fill_type="solid")
-cor_zebra_fill = PatternFill(start_color="F5F8F6", end_color="F5F8F6", fill_type="solid")
-cor_white_fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
-
-font_header = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
-font_normal = Font(name="Calibri", size=11, color="000000")
-font_title = Font(name="Calibri", size=16, bold=True, color="FFFFFF")
-
-align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
-align_left = Alignment(horizontal="left", vertical="center")
-align_right = Alignment(horizontal="right", vertical="center")
-
-thin_border_side = Side(border_style="thin", color="D3D3D3")
-border_cell = Border(left=thin_border_side, right=thin_border_side, top=thin_border_side, bottom=thin_border_side)
-
-# Layout de Dashboard
-ws_dash.merge_cells("A1:D1")
-ws_dash["A1"] = "DASHBOARD DE INVENTÁRIO - ZABBIX"
-ws_dash["A1"].font = font_title
-ws_dash["A1"].fill = cor_header_fill
-ws_dash["A1"].alignment = align_center
-ws_dash.row_dimensions[1].height = 40
-
-ws_dash["A3"] = "Métrica de Infraestrutura"
-ws_dash["B3"] = "Quantidade"
-for col in ["A3", "B3"]:
-    ws_dash[col].font = font_header
-    ws_dash[col].fill = cor_header_fill
-    ws_dash[col].alignment = align_center
-    ws_dash[col].border = border_cell
-
-kpis = [
-    ("Total de Hosts Monitorados", len(hosts)),
-    ("Hosts com Status Ativo", sum(1 for h in hosts if h['status'] == "0")),
-    ("Hosts com Status Inativo", sum(1 for h in hosts if h['status'] != "0")),
-    ("Total de Incidentes / Alertas Ativos", sum(len(x) for x in triggers_map.values()))
-]
-for idx, (label, val) in enumerate(kpis, start=4):
-    ws_dash[f"A{idx}"] = label
-    ws_dash[f"A{idx}"].font = font_normal
-    ws_dash[f"A{idx}"].border = border_cell
-    ws_dash[f"B{idx}"] = val
-    ws_dash[f"B{idx}"].font = Font(name="Calibri", size=11, bold=True)
-    ws_dash[f"B{idx}"].alignment = align_center
-    ws_dash[f"B{idx}"].border = border_cell
-
-colunas = [
-    "ID do Host", "Nome Tecnico", "Nome Visivel", "Endereco IP", 
-    "Modelo de Monitoramento", "Status (Ativo/Inativo)", "Proxy de Monitoramento",
-    "CPU Ult. Valor", "Memoria Ult. Valor", "Discos (Uso %)", "Uptime", "Alertas Ativos no Ativo",
-    "Grupos", "Templates Vinculados", "Sistema Operacional (OS)", "Hardware", "Numero de Serie", "Descricao"
-]
-
-def criar_aba(titulo, dados):
-    ws = wb.create_sheet(title=titulo)
-    ws.views.sheetView[0].showGridLines = True
-    for col_idx, col_name in enumerate(colunas, start=1):
-        cell = ws.cell(row=1, column=col_idx, value=col_name)
-        cell.font = font_header
-        cell.fill = cor_header_fill
-        cell.alignment = align_center
-        cell.border = border_cell
-    ws.row_dimensions[1].height = 28
-    
-    for row_idx, r_data in enumerate(dados, start=2):
-        ws.row_dimensions[row_idx].height = 20
-        fill_to_use = cor_zebra_fill if row_idx % 2 == 0 else cor_white_fill
-        for col_idx, value in enumerate(r_data, start=1):
-            cell = ws.cell(row=row_idx, column=col_idx, value=value)
-            cell.font = font_normal
-            cell.fill = fill_to_use
-            cell.border = border_cell
-            if col_idx in [1, 4, 6]: cell.alignment = align_center
-            elif col_idx in [8, 9]: cell.alignment = align_right
-            else: cell.alignment = align_left
-            
-    for col in ws.columns:
-        max_len = 0
-        col_letter = get_column_letter(col[0].column)
-        for cell in col:
-            if cell.value:
-                val_len = len(str(cell.value))
-                if col[0].column in [10, 12, 13, 14, 18]:
-                    val_len = min(val_len, 30)
-                max_len = max(max_len, val_len)
-        ws.column_dimensions[col_letter].width = max(max_len + 3, 12)
-
-criar_aba("Servidores Físicos (Host)", aba_hypervisors)
-criar_aba("Máquinas Virtuais (VMs)", aba_vms)
-criar_aba("Ativos de Rede (Switches)", aba_rede)
-criar_aba("Todos os Ativos", aba_geral)
-
-for col in ws_dash.columns:
-    max_len = max(len(str(cell.value or '')) for cell in col)
-    col_letter = get_column_letter(col[0].column)
-    ws_dash.column_dimensions[col_letter].width = max(max_len + 5, 15)
-
-xlsx_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ativos_zabbix_vega.xlsx")
+csv_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ativos_zabbix_vega.csv")
 try:
-    wb.save(xlsx_file)
-    print(f"\n[SUCESSO] Planilha Excel (.xlsx) gerada: {xlsx_file}")
+    with open(csv_file, 'w', encoding='utf-8-sig', newline='') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(colunas)
+        writer.writerows(aba_geral)
+    print(f"\n[SUCESSO] Relatorio CSV (.csv) gerado: {csv_file}")
 except Exception as e:
-    print(f"\n[ERRO] Falha ao salvar a planilha: {e}")
+    print(f"\n[ERRO] Falha ao salvar o arquivo CSV: {e}")
     sys.exit(1)
