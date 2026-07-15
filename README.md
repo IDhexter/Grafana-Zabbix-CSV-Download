@@ -38,9 +38,9 @@ Aqui estão os arquivos de exportação disponíveis neste repositório:
 *   [api_export_csv.py](api_export_csv.py): **[Botão]** API de exportação CSV para o Grafana (Cliente Safra - IP mantido oculto por segurança).
 *   [api_export_csv_vega.py](api_export_csv_vega.py): **[Botão]** API de exportação CSV para o Grafana (Cliente Vega - IP `10.10.1.26`).
 
-### 📊 2. Relatórios de Inventário CLI (Excel)
+### 📊 2. Relatórios de Inventário CLI
 *   [export_hosts.py](export_hosts.py): **[EXPORT completo]** Script CLI para exportar inventário em planilha Excel (Cliente Safra - IP mantido oculto por segurança).
-*   [export_hosts_vega.py](export_hosts_vega.py): **[EXPORT completo]** Script CLI para exportar inventário em planilha Excel (Cliente Vega - IP `10.10.1.26`).
+*   [export_hosts_vega.py](export_hosts_vega.py): **[EXPORT completo]** Script CLI para exportar inventário em formato CSV (Cliente Vega - IP `10.10.1.26`).
 
 ---
 
