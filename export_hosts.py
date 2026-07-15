@@ -143,7 +143,7 @@ payload_items = {
                 "cpu.util", "cpu.usage", "hrProcessorLoad", 
                 "memory.util", "memory.size[pused]", "memory.used", 
                 "pused",
-                "system.sw.os", "system.descr", "system.uname",
+                "system.sw.os", "system.descr", "system.uname", "system.hw.os", "sysDescr",
                 "system.hw.model", "system.hw.device",
                 "system.uptime", "sysUpTimeInstance", "hrSystemUptime"
             ]
@@ -226,7 +226,7 @@ for host in hosts:
         
         if val == "": continue
         
-        if key in ["system.sw.os", "system.descr", "system.uname"]:
+        if key in ["system.sw.os", "system.descr", "system.uname", "system.hw.os", "sysDescr"]:
             if not os_fallback or key == "system.sw.os":
                 os_fallback = val
         if key in ["system.hw.model", "system.hw.device"]:
